@@ -13,3 +13,7 @@ Then, another systemd path monitor will check if a flag file is touched, indicat
 
 This script makes the whole process of accepting and importing new CA certificates as easy as just **placing the .pem file in /etc/pki/trust/anchors**, and **nothing else.**
 
+## How do I install this?
+
+You can find a working RPM at SUSE's Open Build Service: https://build.opensuse.org/package/show/home:emendonca/update-browser-certs, or create your own by following the SPEC.
+
