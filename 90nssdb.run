@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+cafile="/etc/pki/nssdb"
+cadir="/var/lib/ca-certificates/pem"
+
+echo "updating NSSDB at $cafile ..."
+
+# delete and re-create the NSSDB
+rm -rf ${cafile}
+mkdir -p ${cafile}
+certutil -d sql:${cafile} -N --empty-password
+chmod 660 ${cafile}/*db
+chgrp users ${cafile}/*db
+
+for f in ${cadir}/*pem; do
+	certutil -d sql:${cafile} -A -i "$f" -n "$(basename ${f})" -t TC
+done
+
+echo "NSSDB done"
+
+touch ${cafile}/.updated
+
+# vim: syntax=sh

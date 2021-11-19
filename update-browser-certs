@@ -1,0 +1,40 @@
+#!/bin/bash
+### Updates browser certificate databases for the current user
+### Erico Mendonca <erico.mendonca@suse.com>
+### Jun 2021
+
+MAINDB="/etc/pki/nssdb"
+LOGID="update-browser-certs"
+
+logger -t $LOGID "starting browser certificate update on $HOME"
+
+# reference: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/linux/cert_management.md
+
+# Google Chrome
+certutil --merge -d sql:$HOME/.pki/nssdb --source-dir sql:${MAINDB}
+if [ $? != 0 ]; then
+	logger -t $LOGID "error updating Google Chrome/Chromium certificate database at ${HOME}"
+else
+	logger -t $LOGID "Google Chrome/Chromium certificate database updated successfully"
+fi
+
+# Mozilla Firefox
+# find out the active profile
+PROFILEID=$(egrep '^Default=\w{3}+' $HOME/.mozilla/firefox/profiles.ini  | cut -d\= -f2)
+
+if [ -z $PROFILEID ]; then
+	logger -t ${LOGID} "couldn't determine Mozilla Firefox profile ID, skipping"
+else
+	certutil --merge -d sql:$HOME/.mozilla/firefox/${PROFILEID} --source-dir sql:${MAINDB}
+	if [ $? != 0 ]; then
+		logger -t $LOGID "error updating Google Chrome/Chromium certificate database at ${HOME}"
+	else
+		logger -t $LOGID "Mozilla Firefox certificate database for ${PROFILEID} updated successfully"
+	fi
+fi
+logger -t $LOGID "browser certificate update on $HOME done"
+
+exit 0
+
+	
+

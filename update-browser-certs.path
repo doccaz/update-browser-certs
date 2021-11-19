@@ -1,0 +1,10 @@
+[Unit]
+Description=Update browser certs if the global NSSDB changes
+
+[Path]
+Unit=update-browser-certs.service
+PathModified=/etc/pki/nssdb/.updated
+
+[Install]
+WantedBy=default.target
+

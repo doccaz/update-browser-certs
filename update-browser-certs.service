@@ -1,0 +1,12 @@
+[Unit]
+Description=Update user browser certificates
+#ConditionUser=!root
+
+[Service]
+ExecStartPre=/usr/bin/sleep 2
+ExecStart=/usr/bin/update-browser-certs
+Type=oneshot
+
+[Install]
+WantedBy=default.target
+
