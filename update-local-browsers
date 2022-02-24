@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "${USER}" != "root" ]; then
+	systemctl enable --user update-browser-certs.path 2>&1 > /dev/null
+	systemctl start --user update-browser-certs.path 2>&1 > /dev/null
+	/usr/bin/update-browser-certs
+fi
+

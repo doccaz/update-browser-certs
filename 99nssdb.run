@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 cafile="/etc/pki/nssdb"
 cadir="/var/lib/ca-certificates/pem"
 
@@ -11,11 +9,15 @@ echo "updating NSSDB at $cafile ..."
 rm -rf ${cafile}
 mkdir -p ${cafile}
 certutil -d sql:${cafile} -N --empty-password
-chmod 660 ${cafile}/*db
+modutil -add ca_certs -libfile /usr/lib64/libnssckbi.so -dbdir ${cafile} -force
+chmod 664 ${cafile}/*db
+chmod 664 ${cafile}/*txt
 chgrp users ${cafile}/*db
 
 for f in ${cadir}/*pem; do
-	certutil -d sql:${cafile} -A -i "$f" -n "$(basename ${f})" -t TC
+
+	logger -t nssdb "adding cert $f"
+	certutil -d sql:${cafile} -A -i "$f" -n "$(basename ${f})" -t TC 2>&1 | logger -t nssdb
 done
 
 echo "NSSDB done"

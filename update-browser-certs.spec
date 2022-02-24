@@ -17,7 +17,7 @@
 
 
 Name:           update-browser-certs
-Version:        1.0
+Version:        1.1
 Release:        0
 Summary:        Updates browser certificates automatically
 License:        GPL-2.0-only
@@ -27,11 +27,15 @@ Source0:        %{name}
 Source1:        %{name}.path
 Source2:        %{name}.service
 Source3:        98-browser-certs.preset
-Source4:        90nssdb.run
+Source4:        99nssdb.run
+Source5:		00update-browser-certs.desktop
+Source6:		update-local-browsers
 BuildRequires:  ca-certificates
 BuildRequires:  systemd-rpm-macros
+BuildRequires:	filesystem
 Requires:       ca-certificates
 Requires:       mozilla-nss-tools
+Requires(post):	systemd
 BuildArch:      noarch
 %systemd_requires
 
@@ -47,15 +51,23 @@ mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_userunitdir}
 mkdir -p %{buildroot}%{_userpresetdir}
 mkdir -p %{buildroot}%{_prefix}/lib/ca-certificates/update.d
+mkdir -p %{buildroot}%{_sysconfdir}/xdg/autostart
+
 install -m 755 %{SOURCE0} %{buildroot}/%{_bindir}/
 install -m 644 %{SOURCE1} %{SOURCE2} %{buildroot}/%{_userunitdir}
 install -m 644 %{SOURCE3} %{buildroot}/%{_userpresetdir}
-install -m 755 %{SOURCE4} %{buildroot}%{_prefix}/lib/ca-certificates/update.d/90nssdb.run
+install -m 755 %{SOURCE4} %{buildroot}%{_prefix}/lib/ca-certificates/update.d/99nssdb.run
+install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/xdg/autostart/
+install -m 755 %{SOURCE6} %{buildroot}%{_bindir}/
+
+%post
+
 
 %files
 %{_bindir}/*
 %{_userunitdir}/*
 %{_userpresetdir}/*
 %{_prefix}/lib/ca-certificates/update.d/*
+%{_sysconfdir}/xdg/autostart/
 
 %changelog

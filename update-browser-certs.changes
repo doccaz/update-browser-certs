@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Wed Feb 23 22:03:44 UTC 2022 - Erico Mendonca <erico.mendonca@suse.com>
+
+- Fixing bugs, adding autostart check.
+
+-------------------------------------------------------------------
+Thu Jan  6 15:42:02 UTC 2022 - Erico Mendonca <erico.mendonca@suse.com> - 1.0
+
+- adding syslog messages.
+- ignoring import errors with certutil when the certificate itself is invalid.
+- renaming 90nssdb.run to 99nssdb.run to make it run later in the process.
+- importing PKCS#11 module to the centralized DB to avoid errors importing ICP Brasil certificates.
+
+-------------------------------------------------------------------
 Sun Jun 20 14:38:38 UTC 2021 - Erico Mendonca <erico.mendonca@suse.com> - 1.0
 
 - Initial OBS packaging. 
