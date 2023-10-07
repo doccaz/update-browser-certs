@@ -2,6 +2,7 @@
 
 A script that automagically merges system CA certificates into a database compatible with Mozilla Firefox, Google Chrome and Chromium using the default systemd path monitoring mechanism.
 
+[![build result](https://build.opensuse.org/projects/home:emendonca/packages/update-browser-certs/badge.svg?type=default)](https://build.opensuse.org/package/show/home:emendonca/update-browser-certs)
 
 ## How does it work?
 
