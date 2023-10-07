@@ -1,0 +1,64 @@
+#!/usr/bin/python3
+#
+# NSSDB certificate import
+# Erico Mendonca <erico.mendonca@suse.com>
+# Oct 2023
+#
+
+import sys
+import os
+import nss.nss as nss
+
+def import_certs_from_dir(database, cert_dir):
+    files = os.listdir(cert_dir)
+    files_pem = [f for f in files if os.path.isfile(cert_dir + '/' + f) and f.endswith('.pem')]
+
+    print(f'Total of {len(files_pem)} certificates to import.')
+    
+    nss.nss_init_read_write(database)
+    certdb = nss.get_default_certdb()
+    slot = nss.get_internal_key_slot()  
+    try:
+        for f in files_pem:
+            print(f'importing certificate: {f}')
+            si = nss.read_der_from_file(cert_dir + '/' + f, True)
+            cert = nss.Certificate(si, certdb, True, f.partition('.')[0])
+            cert.set_trust_attributes('TC', certdb, slot)
+            # print(cert)
+            print(f'processed: {cert.issuer}')
+    except Exception as e:
+        print(f'Exception: {e}')
+        
+    print ('Finished.')
+    return
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    if len(args) != 2:
+        print('Usage: import_certs <path to NSSDB directory> <directory with PEM files>')
+        print('---> be sure to have initialized the directory with "certutil -N --empty-password -d sql:<directory>" first!')
+        exit(1)
+
+    dbdir = args[0]
+    pemdir = args[1]
+
+    if os.path.isdir(dbdir):
+        print(f'Using database directory at {dbdir}')
+    else:
+        print(f'{dbdir} is not a directory!')
+        exit(1)
+
+    if os.path.isdir(pemdir):
+        print(f'Using certificate directory at {pemdir}')
+    else:
+        print(f'{pemdir} is not a directory!')
+        exit(1)
+
+    if os.path.isfile(dbdir + '/cert9.db') is False:
+        print(f'ERROR: not a valid NSSDB directory')
+        print('---> be sure to have initialized the directory with "certutil -N --empty-password -d sql:<directory>" first!')
+        exit(1)
+
+    import_certs_from_dir('sql:' + dbdir, pemdir)
+    nss.nss_shutdown()
+    sys.exit()
