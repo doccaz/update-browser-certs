@@ -2,6 +2,15 @@
 
 cafile="/etc/pki/nssdb"
 cadir="/var/lib/ca-certificates/pem"
+lockfile="/var/run/nss-update.pid"
+
+if [ -f ${lockfile} ]; then
+	LOCKPID=$(cat ${lockfile})
+        logger -t nssdb "someone else (PID ${LOCKPID}) is running a certificate update, will not continue!"
+    exit 0
+fi
+
+echo $$ > ${lockfile}
 
 echo "updating NSSDB at $cafile ..."
 
@@ -14,14 +23,11 @@ chmod 664 ${cafile}/*db
 chmod 664 ${cafile}/*txt
 chgrp users ${cafile}/*db
 
-for f in ${cadir}/*pem; do
-
-	logger -t nssdb "adding cert $f"
-	certutil -d sql:${cafile} -A -i "$f" -n "$(basename ${f})" -t TC 2>&1 | logger -t nssdb
-done
+/usr/bin/import-nss-certs ${cafile} ${cadir} | logger -t nssdb
 
 echo "NSSDB done"
 
+rm -f ${lockfile}
 touch ${cafile}/.updated
 
 # vim: syntax=sh

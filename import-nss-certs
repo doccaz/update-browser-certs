@@ -22,7 +22,7 @@ def import_certs_from_dir(database, cert_dir):
         for f in files_pem:
             print(f'importing certificate: {f}')
             si = nss.read_der_from_file(cert_dir + '/' + f, True)
-            cert = nss.Certificate(si, certdb, True, f.partition('.')[0])
+            cert = nss.Certificate(si, certdb, True, f.replace('.pem', ''))
             cert.set_trust_attributes('TC', certdb, slot)
             # print(cert)
             print(f'processed: {cert.issuer}')
